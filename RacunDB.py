@@ -34,5 +34,6 @@ class Racun:
         self.cur.execute("DELETE FROM racun ")
         self.conn.commit()
 
+
     def __del__(self):
         self.conn.close()

@@ -1,5 +1,5 @@
-- srediti prikaz racuna
+
 - selektovanje pri vracanju - vraca vise na stanje nego sto treba 
-- SREDITI KOD 
 - zarada se prazni
-- Napisati README file
+
+

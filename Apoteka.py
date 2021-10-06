@@ -6,6 +6,10 @@ from functools import partial
 from RacunDB import Racun
 import random
 from time import strftime
+
+
+#Inicijalizacija prozora i uvodjenje baza podataka
+
 db = Baza('lek.db')
 db2 = Racun('racun.db')
 prozor = Tk()
@@ -16,7 +20,7 @@ prozor.geometry("%dx%d" % (sirina, visina))
 prozor.resizable(width = False, height = False)
 prozor.configure(bg = 'lime green')
 prozor.title('Apoteka')
-###############################
+#Definisanje funkcije za sat
 
 def sat():
     vreme = strftime('%H:%M:%S %p')
@@ -25,7 +29,8 @@ def sat():
     lb.after(1000, sat)
     lb.grid(row = 0, column=6)
 sat()
-################################
+
+#Funkcije
 def selektuj(event):
     
     try:
@@ -34,6 +39,7 @@ def selektuj(event):
         c = 0
         index = lek_tree_view.selection()[0]
         odabrani_lek = lek_tree_view.item(index)['values']
+       
         n = odabrani_lek[1]
         c = odabrani_lek[3]
         s = 1
@@ -65,19 +71,25 @@ def popuni_racun(naziv=''):
         racun_tree_view.delete(i)
     for redovi in db2.pokupi(naziv):
         racun_tree_view.insert('', 'end', values=redovi)
+
+
 iznos = 0     
 def iznos_racuna_plus(x):
     global iznos
     iznos += x
     iznos_lbl.configure(text='Iznos je: %d' % iznos + 'rsd')
+
+
 def iznos_racuna_minus(x):
     global iznos
     iznos -= x
     if iznos <0:
         iznos = 0
     iznos_lbl.configure(text='Iznos je: %d' % iznos + 'rsd')
+
+
+
 def dodaj_na_racun():
-    
     odabrani_lek[4] = odabrani_lek[4] - s
     if odabrani_lek[4]<0:
         messagebox.showerror('GRESKA!', 'Ne moze bit imanje od 0')
@@ -87,18 +99,26 @@ def dodaj_na_racun():
     db2.ubaci(n, c, s)
     iznos_racuna_plus(odabrani_lek[3])
     popuni_racun()
+    
+
 def obrisi_sa_racuna():
-    db2.izbrisi(odabrani_lek2[0])
     vracanje_na_stanje()
+    db2.izbrisi(odabrani_lek2[0])
+    
     iznos_racuna_minus(odabrani_lek2[2])
     popuni_racun()
-#################################
+
+
+#Funkcije za racun i kasu
+    
 name = ""
 kasa_iznos = 0
 def ocisti_racun():
     racun_tree_view.delete(*racun_tree_view.get_children())
     global iznos
     iznos = 0
+
+
 def racun_txt():
     lista = []
     x = random.randint(1, 100000)
@@ -124,12 +144,18 @@ def racun_txt():
     kasa_iznos += iznos
     ocisti_racun()
     db2.obrisi()
+
+
 def stanje_kase():
     global kasa_iznos
     kasa_lbl.configure(text='U kasi je: %d' % kasa_iznos + ' rsd')
+
+
 file = open("Zarada.txt", 'a')
 with open("Zarada.txt",'w') as file:
     file.write("\t     Ukupna zarada \n")
+
+
 def presek_stanja():
     global kasa_iznos
     file = open("Zarada.txt", 'a')
@@ -139,22 +165,30 @@ def presek_stanja():
         file.write("------------------------------------\n" )
     file.close()
     kasa_iznos= 0
-#####################################
+
+
+    
+
+
 def vracanje_na_stanje():
-    global s
     x =0
     global odabrani_lek2
+     #################ne radi
     for redovi2 in db.stampaj():
         if odabrani_lek2[1] == redovi2[1]:
-            x = redovi2[4]+s
+            x = redovi2[4]+1
             db.azuriraj(redovi2[0], redovi2[1], redovi2[2], redovi2[3], x)
+               
             
+            
+        
+    
 
-##################################################
+#Dugmici i polja za input
 #presek
 presek = Button(prozor, text = "Presek", padx = 70, pady =10, bg='yellow', command =presek_stanja)
 presek.grid(row = 10, column = 0, sticky="E")
-#pretraga
+#pretraga polje za unos
 pretraga = StringVar()
 Pretraga = Entry(prozor, width = 145, textvariable=pretraga)
 Pretraga.grid(row = 0, column = 0, columnspan = 10, pady = 5, padx = 10, sticky="W")
@@ -184,7 +218,7 @@ scrollbar.configure(command=lek_tree_view.yview)
 scrollbar.pack(side="right", fill="y")
 lek_tree_view.config(yscrollcommand=scrollbar.set)
 
-###################################
+#Jos dugmica - za rad izmedju baza (magacin i racun)
 dodaj  = Button(prozor, text = "Dodaj na racun", padx = 50, pady =10, bg='cadet blue', command = dodaj_na_racun)
 dodaj.grid(row = 4, column = 3)
 
@@ -197,23 +231,15 @@ stampaj.grid(row = 10, column = 6, pady = 10)
 kasa  = Button(prozor, text = "Stanje kase", padx = 55, pady =10, bg='yellow', command=stanje_kase)
 kasa.grid(row = 10, column = 0, pady = 120)
 
-#koliko = StringVar()
-#Koliko = Entry(prozor, textvariable=koliko, width= 2)
-#Koliko.grid(row = 6, column = 3, ipadx =1, pady = 1)
-#Koliko_label = Label(text='Kolicina', bg='lime green')
-#Koliko_label.grid(row = 7, column = 3, pady = 1)
-#Koliko_dugme  = Button(prozor, text = "Izaberi", padx = 3, pady =3, bg='yellow')
-#Koliko_dugme.grid(row = 8, column = 3, pady = 1)
-############### racun
 
-
+#Prikaz iznosa i stanja kase
 iznos_lbl = Label(font=('bold', 27), bg = 'lime green')
 iznos_lbl.grid(row=2, column= 6)
 
 kasa_lbl = Label(font=('bold', 15), bg = 'lime green')
 kasa_lbl.grid(row=10, column= 0, sticky="w")
 
-# prikaz racuna
+#Prikaz racuna
 okvir2 = Frame(prozor)
 okvir2.grid( row=3, column = 6 , rowspan=6, padx = 1, pady = 1, ipady = 150)
 
@@ -229,8 +255,8 @@ scrollbar2 = Scrollbar(okvir2, orient='vertical')
 scrollbar2.configure(command=racun_tree_view.yview)
 scrollbar2.pack(side="right", fill="y")
 racun_tree_view.config(yscrollcommand=scrollbar2.set)
-###########
+#Pozivanje funkcija za baze podataka
 popuni()
 popuni_racun()
-# Start program
+# Pokretanje programa
 prozor.mainloop()
