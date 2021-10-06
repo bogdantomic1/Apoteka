@@ -13,12 +13,10 @@ class Baza:
         redovi = self.cur.fetchall()
         return redovi
 
-    
     def stampaj(self):
         self.cur.execute("SELECT * from lek")
         redovi2 = self.cur.fetchall()
         return redovi2
-
 
 
 
