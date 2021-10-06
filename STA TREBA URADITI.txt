@@ -1,5 +1,0 @@
-
-- selektovanje pri vracanju - vraca vise na stanje nego sto treba 
-- zarada se prazni
-
-
